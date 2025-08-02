@@ -4,9 +4,12 @@ public partial class MainPage : ContentPage
 {
 	int count = 0;
 
+	 Label PruebaLabel;
+
 	public MainPage()
 	{
 		InitializeComponent();
+		PocLabelInCode();
 	}
 
 	private void OnCounterClicked(object? sender, EventArgs e)
@@ -19,5 +22,20 @@ public partial class MainPage : ContentPage
 			CounterBtn.Text = $"Clicked {count} times";
 
 		SemanticScreenReader.Announce(CounterBtn.Text);
+	}
+	private void PocLabelInCode()
+	{
+
+		PruebaLabel = new Label
+		{
+			Text = "Hola, soy una etiqueta creada en código",
+			FontSize = 20,
+			TextColor = Colors.Black,
+			HorizontalOptions = LayoutOptions.Center,
+			VerticalOptions = LayoutOptions.Center
+		};
+		
+		MainLayout.Children.Add(PruebaLabel);
+		
 	}
 }
