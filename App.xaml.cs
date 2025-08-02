@@ -5,11 +5,17 @@ public partial class App : Application
 	public App()
 	{
 		InitializeComponent();
+		//MainPage = new Views.Home.HomePrincipal();
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new AppShell());
+		return new Window(new Views.Home.HomePrincipal())
+		{
+			// Puedes establecer propiedades adicionales de la ventana aquí si es necesario.
+			// Por ejemplo, puedes establecer el título de la ventana:
+			Title = "ClarityPom"
+		};
 	}
 
 	//Eventos opcionales para implementar en el ciclo de vida de la aplicación. La ventana creada anteriormente 
