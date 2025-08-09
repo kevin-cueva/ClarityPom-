@@ -1,18 +1,36 @@
-namespace Views.Home;
 using ViewModels.Home;
+
+namespace Views.Home;
+
 public partial class HomePrincipal : ContentPage
 {
-
+    private readonly ProgresoCircularDrawable _drawable;
+    private readonly GraphicsView _grafico;
     private readonly HomePrincipalViewModel _viewModel;
+
     public HomePrincipal()
     {
         _viewModel = new HomePrincipalViewModel(Dispatcher);
-        _viewModel!._drawable = new ProgresoCircularDrawable();
-        _viewModel._grafico = new GraphicsView
+        BindingContext = _viewModel;
+
+        _drawable = new ProgresoCircularDrawable();
+        _grafico = new GraphicsView
         {
-            Drawable = _viewModel._drawable,
+            Drawable = _drawable,
             HeightRequest = 300,
             WidthRequest = 300
+        };
+
+        // Redibujar cuando el ViewModel cambie
+        _viewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(HomePrincipalViewModel.Progreso))
+                _drawable.Progreso = _viewModel.Progreso;
+
+            if (e.PropertyName == nameof(HomePrincipalViewModel.TiempoRestante))
+                _drawable.TiempoRestante = _viewModel.TiempoRestante;
+
+            _grafico.Invalidate();
         };
 
         var botonIniciar = new Button
@@ -20,18 +38,16 @@ public partial class HomePrincipal : ContentPage
             Text = "Iniciar Pomodoro",
             HorizontalOptions = LayoutOptions.Center
         };
-
-        botonIniciar.Clicked += (s, e) => _viewModel.IniciarPomodoro();
+        botonIniciar.SetBinding(
+            Button.CommandProperty,
+            nameof(HomePrincipalViewModel.IniciarPomodoroCommand));
 
         Content = new StackLayout
         {
             VerticalOptions = LayoutOptions.Center,
             HorizontalOptions = LayoutOptions.Center,
             Spacing = 30,
-            Children = { _viewModel._grafico, botonIniciar }
+            Children = { _grafico, botonIniciar }
         };
-         
-         _viewModel.UpdateProgress();
     }
-
 }
