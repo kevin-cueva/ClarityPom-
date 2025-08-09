@@ -1,23 +1,53 @@
-namespace Views.Home;
 using ViewModels.Home;
+
+namespace Views.Home;
+
 public partial class HomePrincipal : ContentPage
 {
-    Label titleLabel;
+    private readonly ProgresoCircularDrawable _drawable;
+    private readonly GraphicsView _grafico;
     private readonly HomePrincipalViewModel _viewModel;
+
     public HomePrincipal()
     {
-         // ✅ Crear instancia del ViewModel
-        _viewModel = new HomePrincipalViewModel();
-        titleLabel = new Label
+        _viewModel = new HomePrincipalViewModel(Dispatcher);
+        BindingContext = _viewModel;
+
+        _drawable = new ProgresoCircularDrawable();
+        _grafico = new GraphicsView
         {
-            Text = _viewModel.Title,
-            FontSize = 24,
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.CenterAndExpand
+            Drawable = _drawable,
+            HeightRequest = 300,
+            WidthRequest = 300
         };
+
+        // Redibujar cuando el ViewModel cambie
+        _viewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(HomePrincipalViewModel.Progreso))
+                _drawable.Progreso = _viewModel.Progreso;
+
+            if (e.PropertyName == nameof(HomePrincipalViewModel.TiempoRestante))
+                _drawable.TiempoRestante = _viewModel.TiempoRestante;
+
+            _grafico.Invalidate();
+        };
+
+        var botonIniciar = new Button
+        {
+            Text = "Iniciar Pomodoro",
+            HorizontalOptions = LayoutOptions.Center
+        };
+        botonIniciar.SetBinding(
+            Button.CommandProperty,
+            nameof(HomePrincipalViewModel.IniciarPomodoroCommand));
+
         Content = new StackLayout
         {
-            Children = { titleLabel }
+            VerticalOptions = LayoutOptions.Center,
+            HorizontalOptions = LayoutOptions.Center,
+            Spacing = 30,
+            Children = { _grafico, botonIniciar }
         };
     }
 }
